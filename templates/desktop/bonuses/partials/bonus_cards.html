@@ -1,0 +1,9 @@
+{% if bonus_cards %}
+<section class="bonus-cards-section">
+    <div class="bonus-cards-list">
+        {% for bonus in bonus_cards %}
+            {% include "bonuses/partials/bonus_card.html" with bonus=bonus %}
+        {% endfor %}
+    </div>
+</section>
+{% endif %}

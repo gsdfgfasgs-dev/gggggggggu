@@ -1,0 +1,49 @@
+{% extends "offer/standalone_base.html" %}
+{% load static %}
+
+{% block title %}{{ offer.name }} | RoyalLink{% endblock %}
+
+{% block content %}
+<div class="offer-landing offer-landing--mobile">
+    <div class="offer-landing__inner">
+        <div class="offer-landing__layout">
+            <div class="offer-landing__copy">
+                <h1 class="offer-landing__title">How to get a bonus?</h1>
+                <ol class="offer-landing__steps">
+                    <li class="offer-landing__step">
+                        Tap <span class="offer-landing__pill">Go to game</span>.
+                    </li>
+                    <li class="offer-landing__step">
+                        Register and get your bonus.
+                    </li>
+                </ol>
+                <a
+                    class="offer-landing__cta"
+                    href="{{ offer.url }}"
+                    rel="noopener noreferrer"
+                    data-analytics-event="click"
+                    data-analytics-label="go_to_game with offer {{ offer.url }}"
+                >
+                    Go to game
+                </a>
+            </div>
+            <div class="offer-landing__phone-wrap">
+                <div class="offer-landing__phone" aria-hidden="true">
+                    <div class="offer-landing__phone-notch"></div>
+                    <div class="offer-landing__phone-screen">
+                        <img
+                            class="offer-landing__phone-screen-img"
+                            src="{% static 'img/offer.png' %}"
+                            width="337"
+                            height="603"
+                            alt=""
+                            decoding="async"
+                            fetchpriority="high"
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

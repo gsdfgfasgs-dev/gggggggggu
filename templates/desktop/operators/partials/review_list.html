@@ -1,0 +1,106 @@
+{% load review_tags %}
+
+<div class="reviews-section" data-reviews-total="{{ total_reviews }}" data-reviews-per-page="{{ reviews_per_page }}">
+    <div class="reviews-section__header">
+        <h2 class="reviews-section__title">Nutzerbewertungen</h2>
+        {% if total_reviews > 0 %}
+            <span class="reviews-section__count">{{ total_reviews }} Bewertungen</span>
+        {% endif %}
+    </div>
+
+    <!-- Review Statistics -->
+    <div class="reviews-stats">
+        <div class="review-stats">
+            <div class="review-stats__summary">
+                <div class="review-stats__average">
+                    <div class="review-stats__average-value">
+                        {% if stats.average %}
+                            {{ stats.average }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </div>
+                    <div class="review-stats__average-stars">
+                        {% if stats.average %}
+                            {% render_stars stats.average %}
+                        {% endif %}
+                    </div>
+                    <div class="review-stats__total">
+                        {{ stats.total }} Bewertungen
+                    </div>
+                </div>
+
+                {% if stats.total > 0 %}
+                    <div class="review-stats__distribution">
+                        {% for rating, count in stats.distribution|distribution_items_desc %}
+                            {% if rating <= 10 %}
+                                <div class="review-stats__row">
+                                    <span class="review-stats__rating">{{ rating }}★</span>
+                                    <div class="review-stats__bar">
+                                        {% review_bar_fill count stats.total %}
+                                    </div>
+                                    <span class="review-stats__count">{{ count }}</span>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if reviews %}
+        <div class="reviews-list" id="reviews-list">
+            {% for review in reviews|slice:":reviews_per_page" %}
+                {% include "operators/partials/review_card.html" with review=review %}
+            {% endfor %}
+        </div>
+
+        {% if total_reviews > reviews_per_page %}
+            <div class="reviews-load-more">
+                <button class="reviews-load-more__btn" id="load-more-reviews">
+                    Mehr Bewertungen anzeigen
+                </button>
+            </div>
+        {% endif %}
+    {% else %}
+        <p class="reviews-empty">Noch keine Bewertungen. Sei der/die Erste und schreib eine Bewertung!</p>
+    {% endif %}
+
+    {% if is_detail %}
+        {% if user.is_authenticated %}
+            {% if user.profile.is_email_verified %}
+            <div class="review-form-container">
+                <h3 class="review-form__title">Bewertung schreiben</h3>
+
+                <!-- Display form errors from session -->
+                {% if request.session.review_form_errors %}
+                    <div class="review-form__errors">
+                        {% for field, errors in request.session.review_form_errors.items %}
+                            {% for error in errors %}
+                                <p class="review-form__error">{{ field|title }}: {{ error }}</p>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% include "operators/partials/review_form.html" with operator=operator %}
+            </div>
+            {% else %}
+            <p class="review-login-prompt">
+                Um eine Bewertung abzugeben, musst du zuerst deine E-Mail bestätigen.
+            </p>
+            {% endif %}
+        {% else %}
+            <p class="review-login-prompt">
+                Bitte <a href="{% url 'users:login' %}">anmelden</a>, um eine Bewertung abzugeben.
+            </p>
+        {% endif %}
+    {% else %}
+        <div class="reviews-view-all">
+            <a href="{{ operator.get_absolute_url_for_reviews_detail }}" class="bookmaker-card__cta">
+                Alle Bewertungen ansehen
+            </a>
+        </div>
+    {% endif %}
+</div>

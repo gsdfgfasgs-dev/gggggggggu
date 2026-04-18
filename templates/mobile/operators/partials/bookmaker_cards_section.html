@@ -1,0 +1,26 @@
+<section class="page-section bookmaker-cards-section">
+    <div class="bookmaker-cards-section__header">
+        <div>
+            <h2 class="bookmaker-cards-section__title">Top-Buchmacher</h2>
+            <p class="bookmaker-cards-section__subtitle">
+               {% if category.name == 'home'%}
+               {{category.description}}
+               {%else%}
+               Vergleichen Sie die verfügbaren vertrauenswürdigen Buchmacher in {{ category.name }}.
+               {%endif%}
+            </p>
+        </div>
+    </div>
+
+    {% if bookmaker_cards %}
+        <div class="bookmaker-cards-list">
+            {% for card in bookmaker_cards %}
+                {% include "mobile/operators/partials/bookmaker_card.html" with card=card position=forloop.counter %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="bookmaker-cards-empty-state">
+            <p>No bookmaker cards available for this category yet.</p>
+        </div>
+    {% endif %}
+</section>

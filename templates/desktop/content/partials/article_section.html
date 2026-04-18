@@ -1,0 +1,25 @@
+{% if article %}
+    <section class="page-section content-article-section">
+        <div class="content-article-section__header">
+            <div>
+                <h2 class="content-article-section__title">{{ article.title }}</h2>
+            </div>
+        </div>
+
+        <div class="content-article-section__content">
+            {% for block in article.blocks.all %}
+                {% if block.block_type == "rich_text" %}
+                    {% include "content/partials/blocks/rich_text.html" with block=block %}
+                {% elif block.block_type == "image" %}
+                    {% include "content/partials/blocks/image.html" with block=block %}
+                {% elif block.block_type == "table" %}
+                    {% include "content/partials/blocks/table.html" with block=block %}
+                {% elif block.block_type == "quote" %}
+                    {% include "content/partials/blocks/quote.html" with block=block %}
+                {% elif block.block_type == "links" %}
+                    {% include "content/partials/blocks/links.html" with block=block %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    </section>
+{% endif %}

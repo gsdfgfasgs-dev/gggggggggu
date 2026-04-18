@@ -1,0 +1,47 @@
+{% if category_tree %}
+<ul class="m-nav-drawer__list">
+    {% for node in category_tree %}
+        <li class="m-nav-drawer__item">
+            {% if node.children %}
+                <div class="m-nav-drawer__row">
+                    <a href="{{ node.item.get_absolute_url }}" class="m-nav-drawer__link">
+                        {{ node.item.name }}
+                    </a>
+                    <button type="button" class="m-nav-drawer__toggle" aria-label="Toggle subcategories">&#9662;</button>
+                </div>
+                <ul class="m-nav-drawer__sub">
+                    {% for child in node.children %}
+                        <li class="m-nav-drawer__item">
+                            {% if child.children %}
+                                <div class="m-nav-drawer__row">
+                                    <a href="{{ child.item.get_absolute_url }}" class="m-nav-drawer__link">
+                                        {{ child.item.name }}
+                                    </a>
+                                    <button type="button" class="m-nav-drawer__toggle" aria-label="Toggle subcategories">&#9662;</button>
+                                </div>
+                                <ul class="m-nav-drawer__sub">
+                                    {% for grandchild in child.children %}
+                                        <li class="m-nav-drawer__item">
+                                            <a href="{{ grandchild.item.get_absolute_url }}" class="m-nav-drawer__link">
+                                                {{ grandchild.item.name }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <a href="{{ child.item.get_absolute_url }}" class="m-nav-drawer__link">
+                                    {{ child.item.name }}
+                                </a>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <a href="{{ node.item.get_absolute_url }}" class="m-nav-drawer__link">
+                    {{ node.item.name }}
+                </a>
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
+{% endif %}

@@ -1,0 +1,9 @@
+{% if category_tree %}
+    <ul class="category-tree">
+        {% for node in category_tree %}
+            {% include "categories/partials/category_node.html" with node=node %}
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No categories yet.</p>
+{% endif %}

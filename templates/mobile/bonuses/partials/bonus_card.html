@@ -1,0 +1,101 @@
+<article class="bonus-card bonus-card--mobile">
+    <div class="bonus-card__inner">
+        {% if bonus.background_image %}
+            <div class="bonus-card__background" aria-hidden="true">
+                <img
+                    src="{{ bonus.background_image.url }}"
+                    alt=""
+                    class="bonus-card__background-image"
+                    loading="lazy"
+                >
+            </div>
+        {% endif %}
+
+        <div class="bonus-card__content-wrap">
+            <div class="bonus-card__main">
+                <div class="bonus-card__mobile-top">
+                    {% if bonus.image %}
+                        <div class="bonus-card__media">
+                            <img
+                                src="{{ bonus.image.url }}"
+                                alt="{{ bonus.name }}"
+                                class="bonus-card__image"
+                                loading="lazy"
+                            >
+                        </div>
+                    {% endif %}
+
+                    <div class="bonus-card__mobile-intro">
+                        <div class="bonus-card__badges">
+                            {% if bonus.is_new %}
+                                <span class="bonus-card__badge bonus-card__badge--new">New</span>
+                            {% endif %}
+                            {% if bonus.bonus_type %}
+                                <span class="bonus-card__badge">{{ bonus.bonus_type }}</span>
+                            {% endif %}
+                        </div>
+
+                        <h3 class="bonus-card__title">{{ bonus.name }}</h3>
+
+                        {% if bonus.value_text %}
+                            <div class="bonus-card__value">{{ bonus.value_text }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="bonus-card__content">
+                    {% if bonus.short_description %}
+                        <p class="bonus-card__description">{{ bonus.short_description }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="bonus-card__footer">
+                <div class="bonus-card__meta">
+                    {% if bonus.promo_code %}
+                        <div class="bonus-card__promo">
+                            <span class="bonus-card__meta-label">Promo code:</span>
+                            <strong>{{ bonus.promo_code }}</strong>
+                        </div>
+                    {% endif %}
+
+                    {% if bonus.has_wager and bonus.wager_value %}
+                        <div class="bonus-card__wager">
+                            <span class="bonus-card__meta-label">Wager:</span>
+                            <span>{{ bonus.wager_value }}</span>
+                        </div>
+                    {% endif %}
+
+                    {% if bonus.min_deposit %}
+                        <div class="bonus-card__deposit">
+                            <span class="bonus-card__meta-label">Min deposit:</span>
+                            <span>{{ bonus.min_deposit }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="bonus-card__actions">
+                    <a
+                        href="{{ bonus.cta_url }}"
+                        class="bonus-card__cta"
+                        target="_blank"
+                        rel="nofollow noopener sponsored"
+                    >
+                        {{ bonus.cta_text }}
+                    </a>
+
+                    <div
+                        class="bonus-card__expiry"
+                        {% if not bonus.is_permanent and not bonus.expire_at %}aria-hidden="true"{% endif %}
+                    >
+                        {% if bonus.is_permanent %}
+                            Permanent offer
+                        {% elif bonus.expire_at %}
+                            Valid until {{ bonus.expire_at|date:"d.m.Y" }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</article>

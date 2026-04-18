@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Anmelden | RoyalLink{% endblock %}
+
+{% block content %}
+    <section class="page-section auth-page">
+        <div class="auth-shell">
+            <div class="auth-layout">
+                <div class="auth-card auth-card--accent">
+                    <div class="auth-card__content">
+                        <span class="auth-card__eyebrow">Legalbet-EU-Konto</span>
+                        <h1 class="auth-card__title">Willkommen zurück</h1>
+                        <p class="auth-card__description">
+                            Melde dich an, um zu deinem Profil und persönlichen Bereich zu gelangen.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="auth-card auth-card--form">
+                    <div class="auth-form-wrap">
+                        <div class="auth-form-wrap__header">
+                            <h2 class="auth-form-wrap__title">Anmelden</h2>
+                            <p class="auth-form-wrap__subtitle">
+                                Gib deine E-Mail-Adresse und dein Passwort ein.
+                            </p>
+                        </div>
+
+                        <form method="post" class="auth-form" novalidate>
+                            {% csrf_token %}
+
+                            {% if form.non_field_errors %}
+                                <div class="auth-alert auth-alert--error">
+                                    {% for error in form.non_field_errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            <div class="auth-form__group">
+                                <label for="{{ form.email.id_for_label }}" class="auth-form__label">
+                                    E-Mail
+                                </label>
+                                <input
+                                        type="email"
+                                        name="{{ form.email.html_name }}"
+                                        id="{{ form.email.id_for_label }}"
+                                        value="{{ form.email.value|default:'' }}"
+                                        class="auth-form__input{% if form.email.errors %} auth-form__input--error{% endif %}"
+                                        autocomplete="email"
+                                        inputmode="email"
+                                        required
+                                >
+                                {% if form.email.errors %}
+                                    <div class="auth-form__errors">
+                                        {% for error in form.email.errors %}
+                                            <p>{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="auth-form__group">
+                                <label for="{{ form.password.id_for_label }}" class="auth-form__label">
+                                    Passwort
+                                </label>
+                                <input
+                                        type="password"
+                                        name="{{ form.password.html_name }}"
+                                        id="{{ form.password.id_for_label }}"
+                                        class="auth-form__input{% if form.password.errors %} auth-form__input--error{% endif %}"
+                                        autocomplete="current-password"
+                                        required
+                                >
+                                {% if form.password.errors %}
+                                    <div class="auth-form__errors">
+                                        {% for error in form.password.errors %}
+                                            <p>{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <button type="submit" class="auth-form__submit">
+                                Anmelden
+                            </button>
+                        </form>
+
+                        <div class="auth-form-wrap__footer">
+                            <p>
+                                Noch kein Konto?
+                                <a href="{% url 'users:signup' %}" class="auth-form-wrap__link">Jetzt erstellen</a>
+                            </p>
+                            <p>
+                                Passwort vergessen?
+                                <a href="{% url 'users:password_reset' %}" class="auth-form-wrap__link">Zurücksetzen</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

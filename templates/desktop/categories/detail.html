@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load operator_tags category_content_tags %}
+
+{% block title %}{{ category.name }} | RoyalLink{% endblock %}
+
+{% block content %}
+    <section class="page-section category-hero">
+        {% if breadcrumbs %}
+            <nav class="breadcrumbs" aria-label="Breadcrumb-Navigation">
+                <ul class="breadcrumbs__list">
+                    <li class="breadcrumbs__item">
+                        <a href="/">Startseite</a>
+                    </li>
+
+                    {% for crumb in breadcrumbs %}
+                        <li class="breadcrumbs__item">
+                            <span class="breadcrumbs__separator">/</span>
+                            {% if forloop.last %}
+                                <span>{{ crumb.name }}</span>
+                            {% else %}
+                                <a href="{{ crumb.get_absolute_url }}">{{ crumb.name }}</a>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </nav>
+        {% endif %}
+
+        <div class="category-hero__content">
+            <div class="category-hero__main">
+
+                <h1 class="category-hero__title">{{ category.name }}</h1>
+
+                <p class="category-hero__description">
+                    {{ category.description }}
+                </p>
+            </div>
+        </div>
+    </section>
+
+    {% if children %}
+        <section class="page-section category-children-section">
+            <div class="category-section-header">
+                <div>
+                    <h2 class="category-section-title">Unterkategorien</h2>
+                    <p class="category-section-subtitle">
+                        Durchstöbere verwandte Bereiche innerhalb von {{ category.name }}.
+                    </p>
+                </div>
+            </div>
+
+            <div class="category-children-grid">
+                {% for child in children %}
+                    <a href="{{ child.get_absolute_url }}" class="category-child-card">
+                        <span class="category-child-card__title">{{ child.name }}</span>
+                        <span class="category-child-card__arrow" aria-hidden="true">→</span>
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+    {% render_bookmaker_cards category %}
+    {% render_category_article category %}
+{% endblock %}

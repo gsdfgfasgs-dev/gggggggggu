@@ -1,0 +1,16 @@
+<script>
+document.addEventListener('click', function(e) {
+    const el = e.target.closest('[data-analytics-event]');
+    if (!el) return;
+
+    const event = el.dataset.analyticsEvent;
+    const label = el.dataset.analyticsLabel || '';
+
+    if (typeof gtag === 'function') {
+        gtag('event', event, {
+            event_category: 'ui',
+            event_label: label,
+        });
+    }
+});
+</script>

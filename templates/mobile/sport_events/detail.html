@@ -1,0 +1,301 @@
+{% extends "mobile/base.html" %}
+{% load static %}
+
+{% block title %}Sport-Events | RoyalLink{% endblock %}
+
+{% block content %}
+<div class="m-op-page">
+
+    <nav class="m-breadcrumbs" aria-label="Breadcrumb-Navigation">
+        <a href="/">Startseite</a>
+        <span class="m-breadcrumbs__sep">/</span>
+        <span>Sport-Events</span>
+    </nav>
+
+    <section class="m-card m-card--accent">
+        <div class="m-card__body">
+            <h1 class="m-op-hero__name">Sport-Events</h1>
+            <p class="m-op-hero__desc">Beste Quoten für die heutigen Sport-Events</p>
+            <div class="m-op-hero__badges">
+                <span class="m-op-badge">Fußball: {{ counts.football }}</span>
+                <span class="m-op-badge">Eishockey: {{ counts.hockey }}</span>
+                <span class="m-op-badge">Basketball: {{ counts.basketball }}</span>
+                <span class="m-op-badge">Handball: {{ counts.handball }}</span>
+            </div>
+        </div>
+    </section>
+
+    {% if filter_form %}
+        <details
+            class="sport-events-filter-drawer m-card"
+            aria-label="Filter für Sport-Events ein- und ausklappen"
+            {% if filter_form.errors or request.GET.sport or request.GET.league or request.GET.match_phase or request.GET.search %}open{% endif %}
+        >
+            <summary class="sport-events-filter-summary">
+                <span class="sport-events-filter-summary__main">
+                    <span class="sport-events-filter-summary__title" id="sport-events-filter-heading-mobile">Filter</span>
+                    <span class="sport-events-filter-summary__sub">Nach Sportart, Liga, Matchstatus und Stichwort</span>
+                </span>
+                <span class="sport-events-filter-summary__chevron" aria-hidden="true"></span>
+            </summary>
+            <div class="m-card__body sport-events-filter-drawer__body">
+                <form
+                    class="sport-events-filter"
+                    method="get"
+                    action="{% url 'sport_events:detail' %}"
+                    novalidate
+                    aria-labelledby="sport-events-filter-heading-mobile"
+                >
+                    {% if filter_form.non_field_errors %}
+                        <div class="sport-events-filter__errors" role="alert">
+                            {{ filter_form.non_field_errors }}
+                        </div>
+                    {% endif %}
+                    <div class="sport-events-filter__fields sport-events-filter__fields--stack">
+                        <div class="sport-events-filter__group">
+                            <label class="sport-events-filter__label" for="{{ filter_form.sport.id_for_label }}">{{ filter_form.sport.label }}</label>
+                            {{ filter_form.sport }}
+                            {% if filter_form.sport.errors %}
+                                <div class="sport-events-filter__errors">{{ filter_form.sport.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="sport-events-filter__group">
+                            <label class="sport-events-filter__label" for="{{ filter_form.league.id_for_label }}">{{ filter_form.league.label }}</label>
+                            {{ filter_form.league }}
+                            {% if filter_form.league.errors %}
+                                <div class="sport-events-filter__errors">{{ filter_form.league.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="sport-events-filter__group">
+                            <label class="sport-events-filter__label" for="{{ filter_form.match_phase.id_for_label }}">{{ filter_form.match_phase.label }}</label>
+                            {{ filter_form.match_phase }}
+                            {% if filter_form.match_phase.errors %}
+                                <div class="sport-events-filter__errors">{{ filter_form.match_phase.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="sport-events-filter__group">
+                            <label class="sport-events-filter__label" for="{{ filter_form.search.id_for_label }}">{{ filter_form.search.label }}</label>
+                            {{ filter_form.search }}
+                            {% if filter_form.search.errors %}
+                                <div class="sport-events-filter__errors">{{ filter_form.search.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="sport-events-filter__actions">
+                        <button type="submit" class="sport-events-filter__submit">Anwenden</button>
+                        <a class="sport-events-filter__reset" href="{% url 'sport_events:detail' %}">Zurücksetzen</a>
+                    </div>
+                </form>
+            </div>
+        </details>
+        {{ league_names_for_json|json_script:"sport-events-leagues-data" }}
+        <script src="{% static 'js/sport_events_filters.js' %}" defer></script>
+    {% endif %}
+
+    {% if football %}
+    <section class="m-card">
+        <div class="m-card__body">
+            <div class="m-section-header">
+                <h2 class="m-section-title">Fußball</h2>
+                <p class="m-section-subtitle">Zum Wetten klicken · täglich aktualisiert</p>
+            </div>
+
+            <div class="m-records-list">
+                {% for e in football %}
+                    {% if category_links %}
+                        <a class="m-record m-record--sport-football" href="{{ category_links.get_absolute_url }}" role="button">
+                    {% else %}
+                        <article class="m-record m-record--sport-football">
+                    {% endif %}
+                        <h3 class="m-record__title">
+                            {{ e.home|default:"Noch offen" }}{% if e.score %} <span class="sport-events-score">{{ e.score }}</span>{% endif %} — {{ e.away|default:"Noch offen" }}
+                        </h3>
+                        <div class="m-record__badges">
+                            {% if e.match_phase_label %}
+                                <span class="sport-events-phase sport-events-phase--{{ e.match_phase }}">{{ e.match_phase_label }}</span>
+                            {% endif %}
+                            {% if e.league %}
+                                <span class="m-badge">{{ e.league }}{% if e.country %} · {{ e.country }}{% endif %}</span>
+                            {% endif %}
+                            {% if e.status %}
+                                <span class="m-badge m-badge--muted">{{ e.status }}</span>
+                            {% endif %}
+                        </div>
+                        {% if e.date %}
+                            <div class="m-record__row">
+                                <span class="m-record__date">
+                                    {% if e.dt %}
+                                        {{ e.dt|date:"Y.m.d" }} {{ e.time }}
+                                    {% else %}
+                                        {{ e.date }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        {% endif %}
+                    {% if category_links %}
+                        </a>
+                    {% else %}
+                        </article>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if hockey %}
+    <section class="m-card">
+        <div class="m-card__body">
+            <div class="m-section-header">
+                <h2 class="m-section-title">Eishockey</h2>
+                <p class="m-section-subtitle">Zum Wetten klicken · täglich aktualisiert</p>
+            </div>
+
+            <div class="m-records-list">
+                {% for e in hockey %}
+                    {% if category_links %}
+                        <a class="m-record m-record--sport-hockey" href="{{ category_links.get_absolute_url }}" role="button">
+                    {% else %}
+                        <article class="m-record m-record--sport-hockey">
+                    {% endif %}
+                        <h3 class="m-record__title">
+                            {{ e.home|default:"Noch offen" }}{% if e.score %} <span class="sport-events-score">{{ e.score }}</span>{% endif %} — {{ e.away|default:"Noch offen" }}
+                        </h3>
+                        <div class="m-record__badges">
+                            {% if e.match_phase_label %}
+                                <span class="sport-events-phase sport-events-phase--{{ e.match_phase }}">{{ e.match_phase_label }}</span>
+                            {% endif %}
+                            {% if e.league %}
+                                <span class="m-badge">{{ e.league }}{% if e.country %} · {{ e.country }}{% endif %}</span>
+                            {% endif %}
+                            {% if e.status %}
+                                <span class="m-badge m-badge--muted">{{ e.status }}</span>
+                            {% endif %}
+                        </div>
+                        {% if e.date %}
+                            <div class="m-record__row">
+                                <span class="m-record__date">
+                                    {% if e.dt %}
+                                        {{ e.dt|date:"Y.m.d" }} {{ e.time }}
+                                    {% else %}
+                                        {{ e.date }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        {% endif %}
+                    {% if category_links %}
+                        </a>
+                    {% else %}
+                        </article>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if basketball %}
+    <section class="m-card">
+        <div class="m-card__body">
+            <div class="m-section-header">
+                <h2 class="m-section-title">Basketball</h2>
+                <p class="m-section-subtitle">Zum Wetten klicken · täglich aktualisiert</p>
+            </div>
+
+            <div class="m-records-list">
+                {% for e in basketball %}
+                    {% if category_links %}
+                        <a class="m-record m-record--sport-basketball" href="{{ category_links.get_absolute_url }}" role="button">
+                    {% else %}
+                        <article class="m-record m-record--sport-basketball">
+                    {% endif %}
+                        <h3 class="m-record__title">
+                            {{ e.home|default:"Noch offen" }}{% if e.score %} <span class="sport-events-score">{{ e.score }}</span>{% endif %} — {{ e.away|default:"Noch offen" }}
+                        </h3>
+                        <div class="m-record__badges">
+                            {% if e.match_phase_label %}
+                                <span class="sport-events-phase sport-events-phase--{{ e.match_phase }}">{{ e.match_phase_label }}</span>
+                            {% endif %}
+                            {% if e.league %}
+                                <span class="m-badge">{{ e.league }}{% if e.country %} · {{ e.country }}{% endif %}</span>
+                            {% endif %}
+                            {% if e.status %}
+                                <span class="m-badge m-badge--muted">{{ e.status }}</span>
+                            {% endif %}
+                        </div>
+                        {% if e.date %}
+                            <div class="m-record__row">
+                                <span class="m-record__date">
+                                    {% if e.dt %}
+                                        {{ e.dt|date:"Y.m.d" }} {{ e.time }}
+                                    {% else %}
+                                        {{ e.date }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        {% endif %}
+                    {% if category_links %}
+                        </a>
+                    {% else %}
+                        </article>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if handball %}
+    <section class="m-card">
+        <div class="m-card__body">
+            <div class="m-section-header">
+                <h2 class="m-section-title">Handball</h2>
+                <p class="m-section-subtitle">Zum Wetten klicken · täglich aktualisiert</p>
+            </div>
+
+            <div class="m-records-list">
+                {% for e in handball %}
+                    {% if category_links %}
+                        <a class="m-record m-record--sport-handball" href="{{ category_links.get_absolute_url }}" role="button">
+                    {% else %}
+                        <article class="m-record m-record--sport-handball">
+                    {% endif %}
+                        <h3 class="m-record__title">
+                            {{ e.home|default:"Noch offen" }}{% if e.score %} <span class="sport-events-score">{{ e.score }}</span>{% endif %} — {{ e.away|default:"Noch offen" }}
+                        </h3>
+                        <div class="m-record__badges">
+                            {% if e.match_phase_label %}
+                                <span class="sport-events-phase sport-events-phase--{{ e.match_phase }}">{{ e.match_phase_label }}</span>
+                            {% endif %}
+                            {% if e.league %}
+                                <span class="m-badge">{{ e.league }}{% if e.country %} · {{ e.country }}{% endif %}</span>
+                            {% endif %}
+                            {% if e.status %}
+                                <span class="m-badge m-badge--muted">{{ e.status }}</span>
+                            {% endif %}
+                        </div>
+                        {% if e.date %}
+                            <div class="m-record__row">
+                                <span class="m-record__date">
+                                    {% if e.dt %}
+                                        {{ e.dt|date:"Y.m.d" }} {{ e.time }}
+                                    {% else %}
+                                        {{ e.date }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        {% endif %}
+                    {% if category_links %}
+                        </a>
+                    {% else %}
+                        </article>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+</div>
+{% endblock %}
+

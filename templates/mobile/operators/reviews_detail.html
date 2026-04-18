@@ -1,0 +1,72 @@
+{% extends "mobile/base.html" %}
+
+{% block title %}{{ bookmaker.name }} | RoyalLink{% endblock %}
+
+{% block content %}
+    <div class="m-op-page">
+
+    {# ── Breadcrumbs ── #}
+    <nav class="m-breadcrumbs" aria-label="Breadcrumb-Navigation">
+        <a href="/">Startseite</a>
+        <span class="m-breadcrumbs__sep">/</span>
+        <span>{{ bookmaker.name }}</span>
+    </nav>
+
+    {# ── Hero card ── #}
+    <section class="m-card m-card--accent m-op-hero">
+        <div class="m-card__body">
+            <div class="m-op-hero__head">
+                <div class="m-op-hero__logo">
+                    {% if bookmaker.logo %}
+                        <img src="{{ bookmaker.logo.url }}" alt="{{ bookmaker.name }} logo">
+                    {% else %}
+                        <span>{{ bookmaker.name|slice:":1" }}</span>
+                    {% endif %}
+                </div>
+                <div class="m-op-hero__title-block">
+                    <span class="m-op-hero__eyebrow">Buchmacher-Review</span>
+                    <h1 class="m-op-hero__name">{{ bookmaker.name }}</h1>
+                </div>
+                <div class="m-op-hero__rating">
+                    <strong>{% if bookmaker.rating_value is not None %}{{ bookmaker.rating_value }}{% else %}N/O{% endif %}</strong>
+                    <span>Bewertung</span>
+                </div>
+            </div>
+
+            {% if bookmaker.short_description %}
+                <p class="m-op-hero__desc">{{ bookmaker.short_description }}</p>
+            {% endif %}
+
+            <div class="m-op-hero__badges">
+                {% if bookmaker.license_name or bookmaker.license_number %}
+                    <span class="m-op-badge">Lizenziert{% if bookmaker.license_name %}: {{ bookmaker.license_name }}{% endif %}</span>
+                {% endif %}
+                <span class="m-op-badge">{{ bookmaker.review_count }} Bewertungen</span>
+                {% if bookmaker.available_on_android %}
+                    <span class="m-op-badge">Android</span>
+                {% endif %}
+                {% if bookmaker.available_on_ios %}
+                    <span class="m-op-badge">iOS</span>
+                {% endif %}
+            </div>
+
+            {% if bookmaker.cta_url and bookmaker.cta_text %}
+                <a href="{{ bookmaker.cta_url }}"
+                   class="m-btn m-btn--primary"
+                   target="_blank"
+                   rel="nofollow sponsored noopener noreferrer">
+                    {{ bookmaker.cta_text }}
+                </a>
+            {% endif %}
+        </div>
+    </section>
+
+    {% load review_tags %}
+    {% with reviews=bookmaker.prefetched_reviews %}
+         <section class="page-section reviews-section">
+            {% render_reviews reviews bookmaker %}
+        </section>
+    {% endwith %}
+
+    </div>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Profil bearbeiten | RoyalLink{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="container">
+        <div class="auth-layout">
+            <div class="auth-card auth-card--accent">
+                <div class="auth-card__content">
+                    <span class="auth-card__eyebrow">Dein Profil</span>
+                    <h1 class="auth-card__title">Profil bearbeiten</h1>
+                    <p class="auth-card__description">
+                        Aktualisiere deinen Anzeigenamen, deine E-Mail-Adresse und deinen Avatar.
+                    </p>
+                </div>
+            </div>
+
+            <div class="auth-card auth-card--form">
+                <div class="auth-form-wrap">
+                    <div class="auth-form-wrap__header">
+                        <h2 class="auth-form-wrap__title">Profileinstellungen</h2>
+                        <p class="auth-form-wrap__subtitle">
+                            Ändere, wie du anderen Nutzern angezeigt wirst.
+                        </p>
+                    </div>
+
+                    <form method="post" enctype="multipart/form-data" class="auth-form">
+                        {% csrf_token %}
+
+                        <!-- Display Name -->
+                        <div class="auth-form__group">
+                            <label for="{{ form.display_name.id_for_label }}" class="auth-form__label">
+                                Anzeigename
+                            </label>
+                            <input type="text" name="{{ form.display_name.html_name }}"
+                                   id="{{ form.display_name.id_for_label }}"
+                                   value="{{ form.display_name.value|default:'' }}"
+                                   class="auth-form__input{% if form.display_name.errors %} auth-form__input--error{% endif %}">
+                            {% if form.display_name.errors %}
+                                <div class="auth-form__errors">
+                                    {% for error in form.display_name.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Email -->
+                        <div class="auth-form__group">
+                            <label for="{{ form.email.id_for_label }}" class="auth-form__label">
+                                E-Mail
+                            </label>
+                            <input type="email" name="{{ form.email.html_name }}"
+                                   id="{{ form.email.id_for_label }}"
+                                   value="{{ form.email.value|default:'' }}"
+                                   class="auth-form__input{% if form.email.errors %} auth-form__input--error{% endif %}">
+                            {% if form.email.errors %}
+                                <div class="auth-form__errors">
+                                    {% for error in form.email.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                        </div>
+
+                        <!-- Avatar -->
+                        <div class="auth-form__group">
+                            <label for="{{ form.avatar.id_for_label }}" class="auth-form__label">
+                                Avatar
+                            </label>
+
+                            {% if user.profile.avatar %}
+                                <div class="current-avatar">
+                                    <img src="{{ user.profile.avatar.url }}" alt="Aktueller Avatar" class="current-avatar__img">
+                                    <p class="current-avatar__hint">Aktueller Avatar</p>
+                                </div>
+                            {% endif %}
+
+                            <input type="file" name="{{ form.avatar.html_name }}"
+                                   id="{{ form.avatar.id_for_label }}"
+                                   class="auth-form__input{% if form.avatar.errors %} auth-form__input--error{% endif %}">
+                            {% if form.avatar.errors %}
+                                <div class="auth-form__errors">
+                                    {% for error in form.avatar.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <small class="auth-form__hint">JPG, PNG, GIF. Max. 5 MB.</small>
+                        </div>
+
+                        <!-- Form actions -->
+                        <div class="auth-form__actions">
+                            <button type="submit" class="auth-form__submit">Änderungen speichern</button>
+                            <a href="{% url 'users:profile' %}" class="auth-form__cancel">Abbrechen</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

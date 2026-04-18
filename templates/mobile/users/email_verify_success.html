@@ -1,0 +1,49 @@
+{% extends "mobile/base.html" %}
+
+{% block title %}E-Mail bestätigt | RoyalLink{% endblock %}
+
+{% block content %}
+    <section class="page-section auth-page">
+        <div class="auth-shell">
+            <div class="auth-layout">
+                <div class="auth-card auth-card--accent">
+                    <div class="auth-card__content">
+                        <span class="auth-card__eyebrow">Erfolg</span>
+                        <h1 class="auth-card__title">E-Mail bestätigt</h1>
+                        <p class="auth-card__description">
+                            Deine E-Mail-Adresse wurde erfolgreich bestätigt.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="auth-card auth-card--form">
+                    <div class="auth-form-wrap">
+                        <div class="auth-form-wrap__header">
+                            <h2 class="auth-form-wrap__title">Willkommen!</h2>
+                            <p class="auth-form-wrap__subtitle">
+                                Deine E-Mail wurde bestätigt. Du hast jetzt vollen Zugriff auf dein Konto.
+                            </p>
+                        </div>
+
+                        <div class="auth-alert auth-alert--success">
+                            <p>✓ E-Mail-Bestätigung abgeschlossen</p>
+                        </div>
+
+                        <div class="auth-form-wrap__footer">
+                            <p>
+                                <a href="{% url 'users:profile' %}" class="auth-form-wrap__link">
+                                    Zum Profil
+                                </a>
+                            </p>
+                            <p>
+                                <a href="/" class="auth-form-wrap__link">
+                                    Zurück zur Startseite
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

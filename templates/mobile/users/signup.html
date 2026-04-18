@@ -1,0 +1,153 @@
+{% extends "mobile/base.html" %}
+
+{% block title %}Registrieren | RoyalLink{% endblock %}
+
+{% block content %}
+    <section class="page-section auth-page">
+        <div class="container">
+            <div class="auth-layout">
+                <div class="auth-card auth-card--accent">
+                    <div class="auth-card__content">
+                        <span class="auth-card__eyebrow">RoyalLink</span>
+                        <h1 class="auth-card__title">Erstelle dein Konto</h1>
+                        <p class="auth-card__description">
+                            Speichere dein Profil, verwalte deinen Avatar und greife von jedem Gerät auf deinen persönlichen Bereich zu.
+                        </p>
+
+                        <ul class="auth-card__features">
+                            <li class="auth-card__feature">Beste Bewertungen</li>
+                            <li class="auth-card__feature">Beste Boni</li>
+                            <li class="auth-card__feature">Bestenlisten</li>
+                            <li class="auth-card__feature">Schnelle Hilfe</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="auth-card auth-card--form">
+                    <div class="auth-form-wrap">
+                        <div class="auth-form-wrap__header">
+                            <h2 class="auth-form-wrap__title">Registrieren</h2>
+                            <p class="auth-form-wrap__subtitle">
+                                Erstelle ein Konto, um fortzufahren.
+                            </p>
+                        </div>
+
+                        <form method="post" class="auth-form" novalidate>
+                            {% csrf_token %}
+
+                            {% if form.non_field_errors %}
+                                <div class="auth-alert auth-alert--error">
+                                    {% for error in form.non_field_errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="auth-form__group">
+                                <label for="{{ form.display_name.id_for_label }}" class="auth-form__label">
+                                    Anzeigename
+                                </label>
+                                <input
+                                        type="text"
+                                        name="{{ form.display_name.html_name }}"
+                                        id="{{ form.display_name.id_for_label }}"
+                                        value="{{ form.display_name.value|default:'' }}"
+                                        class="auth-form__input{% if form.display_name.errors %} auth-form__input--error{% endif %}"
+                                        autocomplete="nickname"
+                                        maxlength="100"
+                                >
+                                {% if form.display_name.errors %}
+                                    <div class="auth-form__errors">
+                                        {% for error in form.display_name.errors %}
+                                            <p>{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="auth-form__group">
+                                <label for="{{ form.email.id_for_label }}" class="auth-form__label">
+                                    E-Mail
+                                </label>
+                                <input
+                                        type="email"
+                                        name="{{ form.email.html_name }}"
+                                        id="{{ form.email.id_for_label }}"
+                                        value="{{ form.email.value|default:'' }}"
+                                        class="auth-form__input{% if form.email.errors %} auth-form__input--error{% endif %}"
+                                        autocomplete="email"
+                                        inputmode="email"
+                                        required
+                                >
+                                {% if form.email.errors %}
+                                    <div class="auth-form__errors">
+                                        {% for error in form.email.errors %}
+                                            <p>{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="auth-form__group">
+                                <label for="{{ form.password1.id_for_label }}" class="auth-form__label">
+                                    Passwort
+                                </label>
+                                <input
+                                        type="password"
+                                        name="{{ form.password1.html_name }}"
+                                        id="{{ form.password1.id_for_label }}"
+                                        class="auth-form__input{% if form.password1.errors %} auth-form__input--error{% endif %}"
+                                        autocomplete="new-password"
+                                        required
+                                >
+                                {% if form.password1.help_text %}
+                                    <div class="auth-form__hint">
+                                        {{ form.password1.help_text|safe }}
+                                    </div>
+                                {% endif %}
+                                {% if form.password1.errors %}
+                                    <div class="auth-form__errors">
+                                        {% for error in form.password1.errors %}
+                                            <p>{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="auth-form__group">
+                                <label for="{{ form.password2.id_for_label }}" class="auth-form__label">
+                                    Passwort bestätigen
+                                </label>
+                                <input
+                                        type="password"
+                                        name="{{ form.password2.html_name }}"
+                                        id="{{ form.password2.id_for_label }}"
+                                        class="auth-form__input{% if form.password2.errors %} auth-form__input--error{% endif %}"
+                                        autocomplete="new-password"
+                                        required
+                                >
+                                {% if form.password2.errors %}
+                                    <div class="auth-form__errors">
+                                        {% for error in form.password2.errors %}
+                                            <p>{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <button type="submit" class="auth-form__submit">
+                                Konto erstellen
+                            </button>
+                        </form>
+
+                        <div class="auth-form-wrap__footer">
+                            <p>
+                                Schon ein Konto?
+                                <a href="{% url 'users:login' %}" class="auth-form-wrap__link">Anmelden</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,342 @@
+<!-- templates/mobile/emails/base_email.html — mobile-first (touch, narrow viewport, email clients) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="x-apple-disable-message-reformatting">
+    <title>{{ subject }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            font-family: 'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(180deg, #0a0809 0%, #060507 45%, #0c0a0b 100%);
+            color: #e8e6ea;
+            line-height: 1.55;
+            font-size: 16px;
+            overflow-x: hidden;
+            width: 100% !important;
+            min-width: 100% !important;
+        }
+
+        .email-wrapper {
+            max-width: 100%;
+            width: 100%;
+            margin: 0 auto;
+            padding: 16px 12px 24px;
+            padding-left: max(12px, env(safe-area-inset-left, 0px));
+            padding-right: max(12px, env(safe-area-inset-right, 0px));
+            padding-bottom: max(24px, env(safe-area-inset-bottom, 0px));
+            box-sizing: border-box;
+        }
+
+        .email-container {
+            width: 100%;
+            max-width: 560px;
+            margin: 0 auto;
+            background: #100e10;
+            border: 1px solid rgba(184, 74, 85, 0.35);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+            box-sizing: border-box;
+        }
+
+        .email-header {
+            background: linear-gradient(
+                135deg,
+                #0F0B12 0%,
+                #3a1520 16%,
+                #5c1828 30%,
+                #7a1e30 42%,
+                #9e2438 50%,
+                #c81d32 56%,
+                #b83240 62%,
+                #9a4a52 68%,
+                #7a635f 74%,
+                #5c7f76 80%,
+                #489688 86%,
+                #4eaa9a 92%,
+                #5ec5b0 100%
+            );
+            padding: 22px 18px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .email-logo {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin: 0;
+            letter-spacing: 0.02em;
+            text-shadow: 0 1px 12px rgba(0, 0, 0, 0.35);
+        }
+
+        .email-logo span {
+            color: #E2323E;
+        }
+
+        .email-content {
+            padding: 22px 18px;
+            background: #100e10;
+        }
+
+        .email-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0 0 10px 0;
+            line-height: 1.2;
+        }
+
+        .email-subtitle {
+            font-size: 0.95rem;
+            color: #D8D8E0;
+            margin: 0 0 18px 0;
+        }
+
+        .email-text {
+            color: #e8e6ea;
+            margin: 0 0 14px 0;
+            font-size: 0.95rem;
+        }
+
+        .email-text p {
+            margin: 0 0 10px 0;
+        }
+
+        .email-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        .email-text-muted {
+            font-size: 0.82rem;
+            color: #9a9398;
+        }
+
+        .email-text-muted a {
+            color: #E2323E;
+            text-decoration: none;
+        }
+
+        .email-button-wrap {
+            text-align: center;
+            margin: 18px 0 12px;
+        }
+
+        .email-button {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            background: linear-gradient(180deg, #5ec5b0 0%, #4aad99 100%);
+            color: #0a0f12;
+            text-decoration: none;
+            padding: 16px 20px;
+            min-height: 48px;
+            line-height: 1.25;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 1rem;
+            text-align: center;
+            box-shadow: 0 10px 24px rgba(74, 173, 153, 0.28);
+        }
+
+        .email-link-fallback {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 14px 14px;
+            margin: 14px 0;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            font-size: 0.78rem;
+            color: #D8D8E0;
+        }
+
+        .email-link-fallback a {
+            color: #5ec5b0;
+            text-decoration: none;
+        }
+
+        .email-info-box {
+            background: rgba(94, 197, 176, 0.08);
+            border-left: 4px solid #5ec5b0;
+            border-radius: 10px;
+            padding: 14px;
+            margin: 18px 0;
+        }
+
+        .email-info-box p {
+            margin: 0 0 8px 0;
+            font-size: 0.82rem;
+            color: #D8D8E0;
+            line-height: 1.45;
+        }
+
+        .email-info-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .email-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.08);
+            margin: 18px 0;
+        }
+
+        .email-footer {
+            background: #060507;
+            padding: 18px 16px;
+            text-align: center;
+            border-top: 1px solid rgba(184, 74, 85, 0.22);
+        }
+
+        .email-footer-text {
+            font-size: 0.7rem;
+            color: #9a9398;
+            margin: 0 0 8px 0;
+            line-height: 1.45;
+        }
+
+        .email-footer-text a {
+            color: #B84A55;
+            text-decoration: none;
+        }
+
+        /* Narrow phones: comfortable reading, large tap targets, no horizontal scroll */
+        @media only screen and (max-width: 480px) {
+            body {
+                font-size: 15px;
+                line-height: 1.5;
+            }
+
+            .email-wrapper {
+                padding: 12px 10px 20px;
+                padding-left: max(10px, env(safe-area-inset-left, 0px));
+                padding-right: max(10px, env(safe-area-inset-right, 0px));
+            }
+
+            .email-container {
+                border-radius: 14px;
+            }
+
+            .email-header {
+                padding: 18px 14px;
+            }
+
+            .email-logo {
+                font-size: 1.1rem;
+            }
+
+            .email-content {
+                padding: 18px 14px;
+            }
+
+            .email-title {
+                font-size: 1.2rem;
+                margin-bottom: 8px;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+            }
+
+            .email-subtitle {
+                font-size: 0.9rem;
+                margin-bottom: 14px;
+            }
+
+            .email-text {
+                font-size: 0.92rem;
+            }
+
+            .email-button-wrap {
+                margin: 16px 0 10px;
+            }
+
+            .email-button {
+                padding: 18px 16px;
+                min-height: 52px;
+                font-size: 1.02rem;
+                border-radius: 12px;
+                -webkit-tap-highlight-color: rgba(94, 197, 176, 0.25);
+            }
+
+            .email-link-fallback {
+                padding: 12px 10px;
+                margin: 12px 0;
+                font-size: 0.74rem;
+            }
+
+            .email-info-box {
+                padding: 12px;
+                margin: 14px 0;
+            }
+
+            .email-info-box p {
+                font-size: 0.78rem;
+            }
+
+            .email-divider {
+                margin: 14px 0;
+            }
+
+            .email-footer {
+                padding: 14px 12px;
+            }
+
+            .email-footer-text {
+                font-size: 0.68rem;
+            }
+        }
+
+        @media only screen and (max-width: 360px) {
+            .email-title {
+                font-size: 1.1rem;
+            }
+
+            .email-button {
+                padding: 16px 12px;
+                font-size: 0.98rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-wrapper">
+        <div class="email-container">
+            <div class="email-header">
+                <h1 class="email-logo">
+                    RoyalLink
+                </h1>
+            </div>
+
+            <div class="email-content">
+                {% block content %}{% endblock %}
+            </div>
+
+            <div class="email-footer">
+                <p class="email-footer-text">
+                    © {% now "Y" %} RoyalLink. All rights reserved.
+                </p>
+                <p class="email-footer-text">
+                    This email was sent to {{ to_email }}.<br>
+                    If you didn't request this, you can safely ignore it.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

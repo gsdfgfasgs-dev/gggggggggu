@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+{% load user_stats_tags %}
+
+{% block title %}Profil | RoyalLink{% endblock %}
+
+{% block content %}
+    <section class="page-section profile-page">
+        <div class="profile-shell">
+            <div class="profile-layout">
+                <aside class="profile-card profile-card--summary">
+                    <div class="profile-card__body">
+                        <div class="profile-avatar">
+                            {% if request.user.profile.avatar %}
+                                <img src="{{ request.user.profile.avatar.url }}"
+                                     alt="{{ request.user.profile.get_display_name }}">
+                            {% else %}
+                                <span>{{ request.user.email|slice:":1"|upper }}</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="profile-identity">
+                            <h1 class="profile-title">{{ request.user.profile.get_display_name }}</h1>
+                            <p class="profile-email">{{ request.user.email }}</p>
+                        </div>
+                        {% if request.user.profile.is_email_verified %}
+                        {% else %}
+                            {% if can_send_email_confirmation %}
+                            <form method="post" action="{% url 'users:send_email_conf' %}" class="profile-logout">
+                                {% csrf_token %}
+                                <button type="submit" class="profile-logout__btn">
+                                    E-Mail bestätigen
+                                </button>
+                            </form>
+                            {% else %}
+                                <div class="profile-note">
+                                    Du kannst die Bestätigungs-E-Mail in 1 Minute erneut senden.
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                        <form method="get" action="{% url 'users:profile_edit' %}" class="profile-logout">
+                            <button type="submit" class="profile-logout__btn">
+                                Profil bearbeiten
+                            </button>
+                        </form>
+                        <form method="post" action="{% url 'users:logout' %}" class="profile-logout">
+                            {% csrf_token %}
+                            <button type="submit" class="profile-logout__btn">
+                                Abmelden
+                            </button>
+                        </form>
+                    </div>
+                </aside>
+
+                <div class="profile-main">
+                    <section class="profile-card">
+                        <div class="profile-card__body">
+                            <div class="profile-section__header">
+                                <h2 class="profile-section__title">Konto</h2>
+                                <p class="profile-section__subtitle">
+                                    Grundlegende Kontoinformationen.
+                                </p>
+                                <p class="profile-section__subtitle">
+                                    
+                                </p>
+                            </div>
+
+                            <dl class="profile-meta">
+                                <div class="profile-meta__item">
+                                    <dt>Name</dt>
+                                    <dd>{{ request.user.profile.get_display_name }}</dd>
+                                </div>
+                                <div class="profile-meta__item">
+                                    {% if request.user.profile.is_email_verified %}
+                                        <dt>E-Mail (bestätigt)</dt>
+                                        <dd>{{ request.user.email }}</dd>
+                                    {% else %}
+                                        <dt>E-Mail (nicht bestätigt)</dt>
+                                        <dd>{{ request.user.email }}</dd>
+                                    {% endif %}
+
+                                </div>
+                                <div class="profile-meta__item">
+                                    <dt>Registriert seit</dt>
+                                    <dd>{{ request.user.date_joined|date:"d M Y" }}</dd>
+                                </div>
+                            </dl>
+                        </div>
+                    </section>
+
+                    {% get_user_verified_profit request.user as verified_profit %}
+                    {% get_user_stat_records request.user as stat_records %}
+
+                    <section class="profile-card">
+                        <div class="profile-card__body">
+                            <div class="profile-section__header">
+                                <h2 class="profile-section__title">Statistiken</h2>
+                                <p class="profile-section__subtitle">
+                                    Nur verifizierte Einträge werden in der Gewinnberechnung berücksichtigt.
+                                </p>
+                                <p class="profile-section__subtitle">
+                                </p>
+                            </div>
+
+                            <div class="profile-stats-summary">
+                                <div class="profile-stats-summary__item">
+                                    <span class="profile-stats-summary__label">Verifizierter Gewinn</span>
+                                    <strong class="profile-stats-summary__value">{{ verified_profit }}</strong>
+                                </div>
+                                <div class="profile-stats-summary__item">
+                                    <span class="profile-stats-summary__label">Einträge gesamt</span>
+                                    <strong class="profile-stats-summary__value">{{ stat_records|length }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="profile-card">
+                        <div class="profile-card__body">
+                            <div class="profile-section__header">
+                                <h2 class="profile-section__title">Eintrag hinzufügen</h2>
+                                <p class="profile-section__subtitle">
+                                    Füge für einen Buchmacher eine Einzahlung oder Auszahlung hinzu.
+                                </p>
+                                <p class="profile-section__subtitle">
+                                </p>
+                            </div>
+
+                            {% if user.profile.is_email_verified %}
+                            <form method="post"
+                                  action="{% url 'users:user_stat_record_add' %}"
+                                  class="profile-stats-form">
+                                {% csrf_token %}
+
+                                {% if user_stat_record_form.non_field_errors %}
+                                    <div class="auth-alert auth-alert--error">
+                                        {{ user_stat_record_form.non_field_errors }}
+                                    </div>
+                                {% endif %}
+
+                                <div class="profile-stats-form__grid">
+                                    <div class="auth-form__group">
+                                        <label class="auth-form__label"
+                                               for="{{ user_stat_record_form.operator.id_for_label }}">
+                                            Buchmacher
+                                        </label>
+                                        {{ user_stat_record_form.operator }}
+                                        {% if user_stat_record_form.operator.errors %}
+                                            <div class="auth-form__errors">
+                                                {{ user_stat_record_form.operator.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="auth-form__group">
+                                        <label class="auth-form__label"
+                                               for="{{ user_stat_record_form.operation_type.id_for_label }}">
+                                            Art
+                                        </label>
+                                        {{ user_stat_record_form.operation_type }}
+                                        {% if user_stat_record_form.operation_type.errors %}
+                                            <div class="auth-form__errors">
+                                                {{ user_stat_record_form.operation_type.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="auth-form__group">
+                                        <label class="auth-form__label"
+                                               for="{{ user_stat_record_form.amount.id_for_label }}">
+                                            Betrag
+                                        </label>
+                                        {{ user_stat_record_form.amount }}
+                                        {% if user_stat_record_form.amount.errors %}
+                                            <div class="auth-form__errors">
+                                                {{ user_stat_record_form.amount.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="auth-form__submit profile-stats-form__submit">
+                                    Eintrag hinzufügen
+                                </button>
+                            </form>
+                            {% else %}
+                                <div class="profile-note">
+                                    Bitte bestätige zuerst deine E-Mail-Adresse.
+                                </div>
+                            {% endif %}
+                        </div>
+                    </section>
+
+                    <section class="profile-card">
+                        <div class="profile-card__body">
+                            <div class="profile-section__header">
+                                <h2 class="profile-section__title">Meine Einträge</h2>
+                                <p class="profile-section__subtitle">
+                                    Neue Einträge erscheinen sofort und warten auf die Prüfung durch den Admin.
+                                </p>
+                                <p class="profile-section__subtitle">
+                                </p>
+                            </div>
+
+                            {% if stat_records %}
+                                <div class="profile-stats-list">
+                                    {% for record in stat_records %}
+                                        <article class="profile-stats-item">
+                                            <div class="profile-stats-item__main">
+                                                <h3 class="profile-stats-item__title">
+                                                    <a href="{{ record.operator.get_absolute_url }}"
+                                                       class="profile-stats-item__link">
+                                                        {{ record.operator.name }}
+                                                    </a>
+                                                </h3>
+                                                <div class="profile-stats-item__meta">
+                                                    <span class="profile-stats-badge">
+                                                        {{ record.get_operation_type_display }}
+                                                    </span>
+                                                    {% if record.is_verified %}
+                                                        <span class="profile-stats-badge profile-stats-badge--success">
+                                                            Verifiziert
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="profile-stats-badge profile-stats-badge--pending">
+                                                            Nicht verifiziert
+                                                        </span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="profile-stats-item__side">
+                                                <strong class="profile-stats-item__amount">{{ record.amount }}</strong>
+                                                <span class="profile-stats-item__date">
+                                                        {{ record.created_at|date:"d M Y" }}
+                                                </span>
+
+                                                <form method="post"
+                                                      action="{% url 'users:user_stat_record_delete' record.id %}"
+                                                      class="profile-stats-item__delete-form"
+                                                      onsubmit="return confirm('Diesen Eintrag löschen?');">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="profile-stats-item__delete-btn">
+                                                        Löschen
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </article>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="profile-note">
+                                    Du hast noch keine Einträge.
+                                </div>
+                            {% endif %}
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

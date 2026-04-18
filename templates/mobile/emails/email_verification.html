@@ -1,0 +1,35 @@
+{% extends "mobile/emails/base_email.html" %}
+
+{% block content %}
+    <h1 class="email-title">E-Mail-Adresse bestätigen</h1>
+    <p class="email-subtitle">Willkommen bei RoyalLink! Bitte bestätige deine E-Mail, um loszulegen.</p>
+
+    <div class="email-text">
+        <p>Hallo <strong>{{ user.username|default:user.email }}</strong>,</p>
+        <p>danke für deine Registrierung! Tippe auf den Button unten, um deine E-Mail zu bestätigen und dein Konto zu aktivieren.</p>
+    </div>
+
+    <div class="email-button-wrap">
+        <a href="{{ verify_url }}" class="email-button">E-Mail bestätigen</a>
+    </div>
+
+    <div class="email-link-fallback">
+        <p>Falls der Button nicht funktioniert, öffne diesen Link:</p>
+        <a href="{{ verify_url }}">{{ verify_url }}</a>
+    </div>
+
+    <div class="email-info-box">
+        <p>⏰ Dieser Link läuft in {{ expires_hours|default:48 }} Stunden ab.</p>
+        <p>❓ Du hast kein Konto erstellt? Dann kannst du diese E-Mail ignorieren.</p>
+    </div>
+
+    <div class="email-divider"></div>
+
+    <div class="email-text email-text-muted">
+        <p>Nach der Bestätigung kannst du:</p>
+        <p>✓ Buchmacher bewerten<br>
+        ✓ Artikel kommentieren<br>
+        ✓ Wett-Statistiken verfolgen<br>
+        ✓ Empfehlungen erhalten</p>
+    </div>
+{% endblock %}

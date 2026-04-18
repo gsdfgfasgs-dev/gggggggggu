@@ -1,0 +1,46 @@
+{% load comment_tags %}
+
+<div class="comment" id="comment-{{ comment.id }}" data-comment-id="{{ comment.id }}">
+    <div class="comment__header">
+        <div class="comment__avatar">
+            {{ comment.user.profile.get_display_name|slice:":1"|upper }}
+        </div>
+        <div class="comment__meta">
+            <span class="comment__author">{{ comment.user.profile.get_display_name }}</span>
+            <span class="comment__date">{{ comment.created_at|date:"F j, Y" }}</span>
+        </div>
+    </div>
+    <div class="comment__body">
+        {% render_comment_text comment %}
+    </div>
+
+    {% if comment.prefetched_replies %}
+        <div class="comment__replies">
+            {% for reply in comment.prefetched_replies %}
+                {% include "operators/partials/comment_node.html" with comment=reply %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+        <div class="comment__actions">
+            {% if not comment.parent %}
+                <button class="comment__reply-btn" data-parent-id="{{ comment.id }}">
+                    Antworten
+                </button>
+            {% endif %}
+
+            {% if comment.user == user %}
+                <form method="post"
+                      action="{% url 'operators:comment_delete' comment.id %}"
+                      class="comment__delete-form"
+                      onsubmit="return confirm('Diesen Kommentar löschen?');">
+                    {% csrf_token %}
+                    <button type="submit" class="comment__delete-btn">
+                        Löschen
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>

@@ -1,0 +1,55 @@
+{% extends "mobile/base.html" %}
+
+{% block title %}Bestätigung fehlgeschlagen | RoyalLink{% endblock %}
+
+{% block content %}
+    <section class="page-section auth-page">
+        <div class="auth-shell">
+            <div class="auth-layout">
+                <div class="auth-card auth-card--accent">
+                    <div class="auth-card__content">
+                        <span class="auth-card__eyebrow">Fehler</span>
+                        <h1 class="auth-card__title">Bestätigung fehlgeschlagen</h1>
+                        <p class="auth-card__description">
+                            Wir konnten deine E-Mail-Adresse nicht bestätigen.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="auth-card auth-card--form">
+                    <div class="auth-form-wrap">
+                        <div class="auth-form-wrap__header">
+                            <h2 class="auth-form-wrap__title">Etwas ist schiefgelaufen</h2>
+                            <p class="auth-form-wrap__subtitle">
+                                {{ error|default:"Der Bestätigungslink ist ungültig oder abgelaufen." }}
+                            </p>
+                        </div>
+
+                        <div class="auth-alert auth-alert--error">
+                            <p>✗ Bestätigung fehlgeschlagen</p>
+                        </div>
+
+                        <div class="auth-form-wrap__footer">
+                            <p>Mögliche Gründe:</p>
+                            <ul>
+                                <li>Der Link wurde bereits verwendet</li>
+                                <li>Der Link ist abgelaufen (48 Stunden)</li>
+                                <li>Der Link ist ungültig</li>
+                            </ul>
+                            <p>
+                                <a href="{% url 'users:login' %}" class="auth-form-wrap__link">
+                                    Zurück zur Anmeldung
+                                </a>
+                            </p>
+                            <p>
+                                <a href="{% url 'users:password_reset' %}" class="auth-form-wrap__link">
+                                    Neue Bestätigungs-E-Mail anfordern
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

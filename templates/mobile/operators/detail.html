@@ -1,0 +1,147 @@
+{% extends "mobile/base.html" %}
+{% load operator_content_tags %}
+{% load bonus_tags %}
+
+{% block title %}{{ bookmaker.name }} | RoyalLink{% endblock %}
+
+{% block content %}
+    <div class="m-op-page">
+
+    {# ── Breadcrumbs ── #}
+    <nav class="m-breadcrumbs" aria-label="Breadcrumb-Navigation">
+        <a href="/">Startseite</a>
+        <span class="m-breadcrumbs__sep">/</span>
+        <span>{{ bookmaker.name }}</span>
+    </nav>
+
+    {# ── Hero card ── #}
+    <section class="m-card m-card--accent m-op-hero">
+        <div class="m-card__body">
+            <div class="m-op-hero__head">
+                <div class="m-op-hero__logo">
+                    {% if bookmaker.logo %}
+                        <img src="{{ bookmaker.logo.url }}" alt="{{ bookmaker.name }} logo">
+                    {% else %}
+                        <span>{{ bookmaker.name|slice:":1" }}</span>
+                    {% endif %}
+                </div>
+                <div class="m-op-hero__title-block">
+                    <span class="m-op-hero__eyebrow">Buchmacher-Review</span>
+                    <h1 class="m-op-hero__name">{{ bookmaker.name }}</h1>
+                </div>
+                <div class="m-op-hero__rating">
+                    <strong>{% if bookmaker.average_rating is not None %}{{ bookmaker.average_rating|floatformat:"-1" }}{% else %}N/O{% endif %}</strong>
+                    <span>Bewertung</span>
+                </div>
+            </div>
+
+            {% if bookmaker.short_description %}
+                <p class="m-op-hero__desc">{{ bookmaker.short_description }}</p>
+            {% endif %}
+
+            <div class="m-op-hero__badges">
+                {% if bookmaker.available_on_android %}
+                    <span class="m-op-badge">Android</span>
+                {% endif %}
+                {% if bookmaker.available_on_ios %}
+                    <span class="m-op-badge">iOS</span>
+                {% endif %}
+            </div>
+
+            <div class="m-op-hero__facts">
+                <div class="m-op-fact">
+                    <dt>Bewertung</dt>
+                    <dd>{% if bookmaker.average_rating is not None %}{{ bookmaker.average_rating|floatformat:"-1" }}/10{% else %}N/O{% endif %}</dd>
+                </div>
+                <div class="m-op-fact">
+                    <dt>Bewertungen</dt>
+                    <dd>{% if bookmaker.approved_reviews_count is not None %}{{ bookmaker.approved_reviews_count }}{% else %}0{% endif %}</dd>
+                </div>
+                {% if bookmaker.is_bonus_game %}
+                <div class="m-op-fact m-op-fact--license">
+                    <dt>Bonus Gültigkeit</dt>
+                    <dd>{{ bookmaker.bonus_validity_period }}</dd>
+                </div>
+                {%else%}
+                {% if bookmaker.license_name or bookmaker.license_number %}
+                    <div class="m-op-fact m-op-fact--license">
+                        <dt>Lizenz</dt>
+                        <dd>{{ bookmaker.license_name }}{% if bookmaker.license_name and bookmaker.license_number %} — {% endif %}{{ bookmaker.license_number }}</dd>
+                    </div>
+                {% endif %}
+                {%endif%}
+            </div>
+
+            {% if bookmaker.cta_url and bookmaker.cta_text %}
+                <a href="{{ bookmaker.cta_url }}"
+                   class="m-btn m-btn--primary"
+                   target="_blank"
+                   rel="nofollow sponsored noopener noreferrer"
+                   data-analytics-event="click"
+                   data-analytics-label="click to visit {{ bookmaker.cta_url }}"
+                   >
+                   
+                    {{ bookmaker.cta_text }}
+                </a>
+            {% endif %}
+        </div>
+    </section>
+
+    {% with positive_features=bookmaker.features.all neutral_features=bookmaker.features.all %}
+        {% if bookmaker.features.all %}
+            <section class="page-section bookmaker-detail-highlights">
+                <div class="category-section-header">
+                    <div>
+                        <h2 class="category-section-title">Vor- und Nachteile</h2>
+                        <p class="category-section-subtitle">
+                            Kurzer Überblick über die wichtigsten Stärken und Einschränkungen von {{ bookmaker.name }}.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bookmaker-detail-highlights__grid">
+                    <div class="bookmaker-detail-panel">
+                        <h3 class="bookmaker-detail-panel__title">Vorteile</h3>
+                        <ul class="bookmaker-detail-panel__list">
+                            {% for feature in bookmaker.features.all %}
+                                {% if feature.feature_type == "positive" %}
+                                    <li class="bookmaker-detail-panel__item bookmaker-detail-panel__item--positive">
+                                        {{ feature.text }}
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <div class="bookmaker-detail-panel">
+                        <h3 class="bookmaker-detail-panel__title">Hinweise</h3>
+                        <ul class="bookmaker-detail-panel__list">
+                            {% for feature in bookmaker.features.all %}
+                                {% if feature.feature_type == "neutral" %}
+                                    <li class="bookmaker-detail-panel__item bookmaker-detail-panel__item--neutral">
+                                        {{ feature.text }}
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        {% endif %}
+    {% endwith %}
+
+    {% render_bonus_cards bookmaker %}
+    {% load review_tags %}
+    {% with reviews=bookmaker.prefetched_reviews %}
+        <section class="page-section reviews-section">
+            {% render_reviews reviews bookmaker %}
+        </section>
+    {% endwith %}
+    {% render_operator_article bookmaker %}
+    {% load comment_tags %}
+    <section class="page-section comments-section">
+        {% include "operators/partials/comment_tree.html" with comments=bookmaker.prefetched_comments bookmaker=bookmaker %}
+    </section>
+
+    </div>
+{% endblock %}

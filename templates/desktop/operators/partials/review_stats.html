@@ -1,0 +1,39 @@
+{% load review_tags %}
+
+<div class="review-stats">
+    <div class="review-stats__summary">
+        <div class="review-stats__average">
+            <div class="review-stats__average-value">
+                {% if stats.average %}
+                    {{ stats.average }}
+                {% else %}
+                    —
+                {% endif %}
+            </div>
+            <div class="review-stats__average-stars">
+                {% if stats.average %}
+                    {% render_stars stats.average %}
+                {% endif %}
+            </div>
+            <div class="review-stats__total">
+                {{ stats.total }} Bewertungen
+            </div>
+        </div>
+        
+        {% if stats.total > 0 %}
+            <div class="review-stats__distribution">
+                {% for rating, count in stats.distribution|distribution_items_desc %}
+                    {% if rating <= 10 %}
+                        <div class="review-stats__row">
+                            <span class="review-stats__rating">{{ rating }}★</span>
+                            <div class="review-stats__bar">
+                                {% review_bar_fill count stats.total %}
+                            </div>
+                            <span class="review-stats__count">{{ count }}</span>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>

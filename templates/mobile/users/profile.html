@@ -1,0 +1,207 @@
+{% extends "mobile/base.html" %}
+{% load user_stats_tags %}
+
+{% block title %}Profil | RoyalLink{% endblock %}
+
+{% block content %}
+<div class="m-profile-page">
+
+    {# ── Summary card (accent gradient) ── #}
+    <section class="m-card m-card--accent">
+        <div class="m-card__body">
+            <div class="m-profile-summary">
+                <div class="m-profile-avatar">
+                    {% if request.user.profile.avatar %}
+                        <img src="{{ request.user.profile.avatar.url }}"
+                             alt="{{ request.user.profile.get_display_name }}">
+                    {% else %}
+                        <span>{{ request.user.email|slice:":1"|upper }}</span>
+                    {% endif %}
+                </div>
+
+                <h1 class="m-profile-name">{{ request.user.profile.get_display_name }}</h1>
+                <p class="m-profile-email">{{ request.user.email }}</p>
+
+                <div class="m-profile-actions">
+                    {% if not request.user.profile.is_email_verified %}
+                        {% if can_send_email_confirmation %}
+                        <form method="post" action="{% url 'users:send_email_conf' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="m-btn m-btn--primary">E-Mail bestätigen</button>
+                        </form>
+                        {% else %}
+                        <p class="m-profile-note">Du kannst die Bestätigungs-E-Mail in 1 Minute erneut senden.</p>
+                        {% endif %}
+                    {% endif %}
+                    <form method="get" action="{% url 'users:profile_edit' %}">
+                        <button type="submit" class="m-btn m-btn--primary">Profil bearbeiten</button>
+                    </form>
+                    <form method="post" action="{% url 'users:logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="m-btn m-btn--primary">Abmelden</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {# ── Account info ── #}
+    <section class="m-card">
+        <div class="m-card__body">
+            <div class="m-section-header">
+                <h2 class="m-section-title">Konto</h2>
+                <p class="m-section-subtitle">Grundlegende Kontoinformationen.</p>
+            </div>
+
+            <dl class="m-meta-list">
+                <div class="m-meta-item">
+                    <dt>Name</dt>
+                    <dd>{{ request.user.profile.get_display_name }}</dd>
+                </div>
+                <div class="m-meta-item">
+                    {% if request.user.profile.is_email_verified %}
+                        <dt>E-Mail (bestätigt)</dt>
+                    {% else %}
+                        <dt>E-Mail (nicht bestätigt)</dt>
+                    {% endif %}
+                    <dd>{{ request.user.email }}</dd>
+                </div>
+                <div class="m-meta-item">
+                    <dt>Registriert seit</dt>
+                    <dd>{{ request.user.date_joined|date:"d M Y" }}</dd>
+                </div>
+            </dl>
+        </div>
+    </section>
+
+    {% get_user_verified_profit request.user as verified_profit %}
+    {% get_user_stat_records request.user as stat_records %}
+
+    {# ── Statistics ── #}
+    <section class="m-card">
+        <div class="m-card__body">
+            <div class="m-section-header">
+                <h2 class="m-section-title">Statistiken</h2>
+                <p class="m-section-subtitle">Nur verifizierte Einträge werden im Gewinn berücksichtigt.</p>
+            </div>
+
+            <div class="m-stats-summary">
+                <div class="m-stats-summary__item">
+                    <span class="m-stats-summary__label">Verifizierter Gewinn</span>
+                    <strong class="m-stats-summary__value">{{ verified_profit }}</strong>
+                </div>
+                <div class="m-stats-summary__item">
+                    <span class="m-stats-summary__label">Einträge gesamt</span>
+                    <strong class="m-stats-summary__value">{{ stat_records|length }}</strong>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {# ── Add record ── #}
+    <section class="m-card">
+        <div class="m-card__body">
+            <div class="m-section-header">
+                <h2 class="m-section-title">Eintrag hinzufügen</h2>
+                <p class="m-section-subtitle">Füge für einen Buchmacher eine Einzahlung oder Auszahlung hinzu.</p>
+            </div>
+
+           {% if user.profile.is_email_verified %}
+           <form method="post"
+           action="{% url 'users:user_stat_record_add' %}"
+           class="m-form">
+         {% csrf_token %}
+
+         {% if user_stat_record_form.non_field_errors %}
+             <div class="m-form__alert">
+                 {{ user_stat_record_form.non_field_errors }}
+             </div>
+         {% endif %}
+
+         <div class="m-form__group">
+             <label class="m-form__label"
+                    for="{{ user_stat_record_form.operator.id_for_label }}">
+                 Buchmacher
+             </label>
+             {{ user_stat_record_form.operator }}
+             {% if user_stat_record_form.operator.errors %}
+                 <div class="m-form__errors">{{ user_stat_record_form.operator.errors }}</div>
+             {% endif %}
+         </div>
+
+         <div class="m-form__group">
+             <label class="m-form__label"
+                    for="{{ user_stat_record_form.operation_type.id_for_label }}">
+                 Art
+             </label>
+             {{ user_stat_record_form.operation_type }}
+             {% if user_stat_record_form.operation_type.errors %}
+                 <div class="m-form__errors">{{ user_stat_record_form.operation_type.errors }}</div>
+             {% endif %}
+         </div>
+
+         <div class="m-form__group">
+             <label class="m-form__label"
+                    for="{{ user_stat_record_form.amount.id_for_label }}">
+                 Betrag
+             </label>
+             {{ user_stat_record_form.amount }}
+             {% if user_stat_record_form.amount.errors %}
+                 <div class="m-form__errors">{{ user_stat_record_form.amount.errors }}</div>
+             {% endif %}
+         </div>
+
+         <button type="submit" class="m-btn m-btn--primary">Eintrag hinzufügen</button>
+     </form>
+           {% else %}
+           <p class="m-profile-note">Bitte bestätige zuerst deine E-Mail-Adresse.</p>
+           {% endif %}
+        </div>
+    </section>
+
+    {# ── My records ── #}
+    <section class="m-card">
+        <div class="m-card__body">
+            <div class="m-section-header">
+                <h2 class="m-section-title">Meine Einträge</h2>
+                <p class="m-section-subtitle">Neue Einträge warten auf die Prüfung durch den Admin.</p>
+            </div>
+
+            {% if stat_records %}
+                <div class="m-records-list">
+                    {% for record in stat_records %}
+                        <article class="m-record">
+                            <h3 class="m-record__title">
+                                <a href="{{ record.operator.get_absolute_url }}">
+                                    {{ record.operator.name }}
+                                </a>
+                            </h3>
+                            <div class="m-record__badges">
+                                <span class="m-badge">{{ record.get_operation_type_display }}</span>
+                                {% if record.is_verified %}
+                                    <span class="m-badge m-badge--success">Verifiziert</span>
+                                {% else %}
+                                    <span class="m-badge m-badge--pending">Nicht verifiziert</span>
+                                {% endif %}
+                            </div>
+                            <div class="m-record__row">
+                                <strong class="m-record__amount">{{ record.amount }}</strong>
+                                <span class="m-record__date">{{ record.created_at|date:"d M Y" }}</span>
+                            </div>
+                            <form method="post"
+                                  action="{% url 'users:user_stat_record_delete' record.id %}"
+                                  onsubmit="return confirm('Diesen Eintrag löschen?');">
+                                {% csrf_token %}
+                                <button type="submit" class="m-record__delete">Löschen</button>
+                            </form>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="m-empty">Du hast noch keine Einträge.</div>
+            {% endif %}
+        </div>
+    </section>
+
+</div>
+{% endblock %}

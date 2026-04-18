@@ -1,0 +1,7 @@
+{% extends "mobile/base.html" %}
+{% load operator_tags category_content_tags %}
+
+{% block content %}
+    {% render_bookmaker_cards category %}
+    {% render_category_article category %}
+{% endblock %}

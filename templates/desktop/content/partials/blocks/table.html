@@ -1,0 +1,13 @@
+{% load content_tags %}
+
+<div class="content-block content-block--table">
+    {% if block.title %}
+        <h3 class="content-block__title">{{ block.title }}</h3>
+    {% endif %}
+
+    {% if block.body %}
+        <div class="content-block__body content-block__prose content-block__table-wrap">
+            {{ block.body|render_markdown }}
+        </div>
+    {% endif %}
+</div>

@@ -1,0 +1,16 @@
+<div class="content-block content-block--image">
+    {% if block.title %}
+        <h3 class="content-block__title">{{ block.title }}</h3>
+    {% endif %}
+
+    {% if block.image %}
+        <figure class="content-block__figure">
+            <img
+                src="{{ block.image.url }}"
+                alt="{{ block.image_alt }}"
+                class="content-block__image"
+                loading="lazy"
+            >
+        </figure>
+    {% endif %}
+</div>

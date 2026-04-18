@@ -1,0 +1,39 @@
+<form method="post" action="{% url 'operators:add_review' operator.slug %}" class="review-form">
+    {% csrf_token %}
+
+    <div class="review-form__group">
+        <label for="id_rating" class="review-form__label">Bewertung (0–10)</label>
+        <input type="number" name="rating" id="id_rating" step="1" min="0" max="10" 
+               class="review-form__input" 
+               value="{{ request.session.review_form_data.rating|default:'' }}"
+               required>
+        <div class="review-form__stars-input" data-rating="{{ request.session.review_form_data.rating|default:'0' }}">
+            {% for i in "0123456789"|make_list %}
+                <span class="review-star-input" data-value="{{ forloop.counter0 }}">☆</span>
+            {% endfor %}
+        </div>
+        <small class="review-form__hint">Klicke auf die Sterne, um zu bewerten (1–10)</small>
+    </div>
+
+    <div class="review-form__group">
+        <label for="id_pros" class="review-form__label">Vorteile (optional)</label>
+        <textarea name="pros" id="id_pros" rows="2" class="review-form__input" 
+                  placeholder="Was hat dir gefallen?">{{ request.session.review_form_data.pros|default:'' }}</textarea>
+    </div>
+
+    <div class="review-form__group">
+        <label for="id_cons" class="review-form__label">Nachteile (optional)</label>
+        <textarea name="cons" id="id_cons" rows="2" class="review-form__input" 
+                  placeholder="Was könnte besser sein?">{{ request.session.review_form_data.cons|default:'' }}</textarea>
+    </div>
+
+    <div class="review-form__group">
+        <label for="id_comment" class="review-form__label">Deine Bewertung *</label>
+        <textarea name="comment" id="id_comment" rows="4" class="review-form__input" 
+                  placeholder="Schreibe deine ausführliche Bewertung..." 
+                  required>{{ request.session.review_form_data.comment|default:'' }}</textarea>
+        <small class="review-form__hint">Mindestens 10 Zeichen</small>
+    </div>
+
+    <button type="submit" class="review-form__submit">Bewertung absenden</button>
+</form>

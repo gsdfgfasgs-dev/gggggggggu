@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}{{ bookmaker.name }} | RoyalLink{% endblock %}
+
+{% block content %}
+    <section class="page-section bookmaker-detail-hero">
+        <nav class="breadcrumbs" aria-label="Breadcrumb-Navigation">
+            <ul class="breadcrumbs__list">
+                <li class="breadcrumbs__item">
+                    <a href="/">Startseite</a>
+                </li>
+                <li class="breadcrumbs__item">
+                    <span class="breadcrumbs__separator">/</span>
+                    <span>{{ bookmaker.name }}</span>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="bookmaker-detail-hero__content">
+            <div class="bookmaker-detail-hero__main">
+                <div class="bookmaker-detail-hero__brand">
+                    <div class="bookmaker-detail-hero__logo-wrap">
+                        {% if bookmaker.logo %}
+                            <img
+                                    src="{{ bookmaker.logo.url }}"
+                                    alt="{{ bookmaker.name }} logo"
+                                    class="bookmaker-detail-hero__logo"
+                            >
+                        {% else %}
+                            <div class="bookmaker-detail-hero__logo-placeholder" aria-hidden="true">
+                                {{ bookmaker.name|slice:":1" }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="bookmaker-detail-hero__brand-content">
+                        <span class="bookmaker-detail-hero__eyebrow">Buchmacher-Review</span>
+                        <h1 class="bookmaker-detail-hero__title">{{ bookmaker.name }}</h1>
+
+                        {% if bookmaker.short_description %}
+                            <p class="bookmaker-detail-hero__description">
+                                {{ bookmaker.short_description }}
+                            </p>
+                        {% endif %}
+
+                        <div class="bookmaker-detail-hero__meta">
+                            {% if bookmaker.license_name or bookmaker.license_number %}
+                                <span class="bookmaker-detail-hero__meta-item">
+                                    Lizenziert
+                                    {% if bookmaker.license_name %}: {{ bookmaker.license_name }}{% endif %}
+                                    {% if bookmaker.license_number %} {{ bookmaker.license_number }}{% endif %}
+                                </span>
+                            {% endif %}
+
+                            <span class="bookmaker-detail-hero__meta-item">
+                                {{ bookmaker.review_count }} Bewertungen
+                            </span>
+                        </div>
+
+                        <div class="bookmaker-detail-hero__platforms">
+                            {% if bookmaker.available_on_android %}
+                                <span class="bookmaker-detail-hero__platform-badge">
+                                    <span class="bookmaker-detail-hero__platform-icon bookmaker-detail-hero__platform-icon--android"
+                                          aria-hidden="true"></span>
+                                    Android
+                                </span>
+                            {% endif %}
+
+                            {% if bookmaker.available_on_ios %}
+                                <span class="bookmaker-detail-hero__platform-badge">
+                                    <span class="bookmaker-detail-hero__platform-icon bookmaker-detail-hero__platform-icon--ios"
+                                          aria-hidden="true"></span>
+                                    iOS
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="bookmaker-detail-hero__aside" aria-label="Buchmacher-Fakten">
+                <div class="bookmaker-detail-facts">
+                    {% if bookmaker.rating_value is not None %}
+                        <div class="bookmaker-detail-facts__item">
+                            <div class="bookmaker-detail-facts__label">Bewertung</div>
+                            <div class="bookmaker-detail-facts__value">{{ bookmaker.rating_value }}/10</div>
+                        </div>
+                    {% endif %}
+
+                    <div class="bookmaker-detail-facts__item">
+                        <div class="bookmaker-detail-facts__label">Bewertungen</div>
+                        <div class="bookmaker-detail-facts__value">{{ bookmaker.review_count }}</div>
+                    </div>
+
+                    {% if bookmaker.license_name or bookmaker.license_number %}
+                        <div class="bookmaker-detail-facts__item">
+                            <div class="bookmaker-detail-facts__label">Lizenz</div>
+                            <div class="bookmaker-detail-facts__value">
+                                {{ bookmaker.license_name }}{% if bookmaker.license_name and bookmaker.license_number %}
+                                    — {% endif %}{{ bookmaker.license_number }}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% if bookmaker.cta_url and bookmaker.cta_text %}
+                    <a
+                            href="{{ bookmaker.cta_url }}"
+                            class="bookmaker-detail-hero__cta"
+                            target="_blank"
+                            rel="nofollow sponsored noopener noreferrer"
+                    >
+                        {{ bookmaker.cta_text }}
+                    </a>
+                {% endif %}
+            </aside>
+        </div>
+    </section>
+    {% load review_tags %}
+    {% with reviews=bookmaker.prefetched_reviews %}
+         <section class="page-section reviews-section">
+            {% render_reviews reviews bookmaker %}
+        </section>
+    {% endwith %}
+{% endblock %}

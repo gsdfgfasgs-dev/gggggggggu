@@ -1,0 +1,133 @@
+{% load operator_tags %}
+{% bookmaker_display_score card as bk_score %}
+{% bookmaker_star_filled_count_5 card as bk_stars %}
+<article class="bookmaker-card{% if position == 2 %} bookmaker-card--rank-2{% elif position == 3 %} bookmaker-card--rank-3{% endif %}">
+    <div class="bookmaker-card__shell">
+        <a
+                {% if not card.is_slot_game %}
+                href="{{ card.get_absolute_url }}"
+                {% endif %}
+                class="bookmaker-card__primary-link"
+                aria-label="Details zu {{ card.name }} öffnen"
+                data-analytics-event="click"
+                data-analytics-label="click to visit bk {{ card.name }}"
+        >
+            <span class="visually-hidden">{{ card.name }}</span>
+        </a>
+        <div class="bookmaker-card__rank-digit{% if position > 3 %} bookmaker-card__rank-digit--empty{% endif %}" aria-hidden="true">{% if position <= 3 %}{{ position }}{% endif %}</div>
+
+        <div class="bookmaker-card__panel">
+            {% if position == 1 %}
+                <div class="bookmaker-card__ribbon">
+                    <span class="bookmaker-card__ribbon-icon" aria-hidden="true">♔</span>
+                    <span class="bookmaker-card__ribbon-text">Beste Wahl</span>
+                </div>
+            {% elif position == 2 %}
+                <div class="bookmaker-card__ribbon bookmaker-card__ribbon--second">
+                    <span class="bookmaker-card__ribbon-icon" aria-hidden="true">♕</span>
+                    <span class="bookmaker-card__ribbon-text">Zweite Wahl</span>
+                </div>
+            {% elif position == 3 %}
+                <div class="bookmaker-card__ribbon bookmaker-card__ribbon--third">
+                    <span class="bookmaker-card__ribbon-icon" aria-hidden="true">♚</span>
+                    <span class="bookmaker-card__ribbon-text">Dritte Wahl</span>
+                </div>
+            {% endif %}
+
+            <aside class="bookmaker-card__logo-strip" aria-label="{{ card.name }} logo">
+                <div class="bookmaker-card__logo-wrap">
+                    <div class="bookmaker-card__logo-link">
+                        {% if card.logo %}
+                            <img
+                                    src="{{ card.logo.url }}"
+                                    alt=""
+                                    class="bookmaker-card__logo"
+                                    loading="lazy"
+                            >
+                        {% else %}
+                            <div class="bookmaker-card__logo-placeholder" aria-hidden="true">
+                                {{ card.name|slice:":1" }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </aside>
+
+            <div class="bookmaker-card__panel-content">
+                <div class="bookmaker-card__bonus">
+                    {% if card.short_description %}
+                        <p class="bookmaker-card__bonus-primary">{{ card.short_description }}</p>
+                    {% endif %}
+                    {% for feature in card.features.all %}
+                        {% if forloop.first and not card.short_description %}
+                            <p class="bookmaker-card__bonus-primary">{{ feature.text }}</p>
+                        {% elif card.short_description and forloop.counter0 == 0 %}
+                            <p class="bookmaker-card__bonus-accent">{{ feature.text }}</p>
+                        {% elif card.short_description and forloop.counter0 == 1 %}
+                            <p class="bookmaker-card__bonus-muted">{{ feature.text }}</p>
+                        {% elif not card.short_description and forloop.counter0 == 1 %}
+                            <p class="bookmaker-card__bonus-accent">{{ feature.text }}</p>
+                        {% elif not card.short_description and forloop.counter0 == 2 %}
+                            <p class="bookmaker-card__bonus-muted">{{ feature.text }}</p>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                {% if not card.is_slot_game %}
+                <div class="bookmaker-card__rating-col">
+                    <div
+                            class="bookmaker-card__stars"
+                            role="img"
+                            aria-label="{% if bk_score is not None %}Bewertung {{ bk_score|floatformat:1 }} von 10{% else %}Noch keine Bewertung{% endif %}"
+                    >
+                        {% for _ in "xxxxx" %}
+                            <span class="bookmaker-card__star{% if forloop.counter <= bk_stars %} bookmaker-card__star--full{% endif %}">★</span>
+                        {% endfor %}
+                    </div>
+                    <div class="bookmaker-card__score-wrap">
+                       {% if not card.is_slot_game %}
+                       {% if bk_score is not None %}
+                       <span class="bookmaker-card__score-value">{{ bk_score|floatformat:1 }}</span>
+                   {% else %}
+                       <span class="bookmaker-card__score-value bookmaker-card__score-value--na">N/O</span>
+                   {% endif %}
+                       {%endif%}
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="bookmaker-card__cta-col">
+                    {% if card.cta_url and card.cta_text %}
+                        <a
+                                href="{{ card.cta_url }}"
+                                class="bookmaker-card__cta"
+                                target="_blank"
+                                rel="nofollow noopener noreferrer"
+                                data-analytics-event="click"
+                                data-analytics-label="click to visit {{ card.cta_url }} from cat page"
+                        >
+                            {{ card.cta_text }}
+                        </a>
+                    {% endif %}
+                    <p class="bookmaker-card__social-proof">
+                        {% if not card.is_slot_game %}
+                        <span class="bookmaker-card__social-proof-num">{{ card.approved_reviews_count }}</span>
+                        <span class="bookmaker-card__social-proof-label"> Bewertungen</span>
+                        {% endif %}
+                    </p>
+                    <div class="bookmaker-card__payments" aria-hidden="true">
+                        <span class="bookmaker-card__pay bookmaker-card__pay--visa">VISA</span>
+                        <span class="bookmaker-card__pay bookmaker-card__pay--mc">
+                            <span class="bookmaker-card__pay-mc-circle bookmaker-card__pay-mc-circle--red"></span>
+                            <span class="bookmaker-card__pay-mc-circle bookmaker-card__pay-mc-circle--orange"></span>
+                        </span>
+                        <span class="bookmaker-card__pay bookmaker-card__pay--gpay">G Pay</span>
+                        <span class="bookmaker-card__pay bookmaker-card__pay--apple">
+                            <span class="bookmaker-card__pay-apple-ico" aria-hidden="true"></span> Pay
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</article>

@@ -1,0 +1,8 @@
+<form method="post" action="{% url 'operators:add_comment' bookmaker.slug %}" class="comment-form">
+    {% csrf_token %}
+    <input type="hidden" name="parent_id" id="parent-id" value="">
+    <div class="comment-form__group">
+        <textarea name="text" id="comment-text" rows="3" placeholder="Schreibe deinen Kommentar..." class="comment-form__input" required></textarea>
+    </div>
+    <button type="submit" class="comment-form__submit">Kommentar senden</button>
+</form>

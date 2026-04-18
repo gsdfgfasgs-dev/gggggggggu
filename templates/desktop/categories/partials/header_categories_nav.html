@@ -1,0 +1,50 @@
+{% if category_tree %}
+    <nav class="header-categories-nav" id="site-nav" aria-label="Main categories">
+        <ul class="header-categories-nav__list">
+            {% for node in category_tree %}
+                <li class="header-categories-nav__item{% if node.children %} header-categories-nav__item--has-children{% endif %}">
+                    <div class="header-categories-nav__row">
+                        <a href="{{ node.item.get_absolute_url }}" class="header-categories-nav__link">
+                            {{ node.item.name }}
+                        </a>
+
+                        {% if node.children %}
+                            <button
+                                class="header-categories-nav__toggle"
+                                type="button"
+                                aria-expanded="false"
+                                aria-label="Toggle {{ node.item.name }} subcategories"
+                            ></button>
+                        {% endif %}
+                    </div>
+
+                    {% if node.children %}
+                        <div class="header-categories-nav__dropdown">
+                            <ul class="header-categories-nav__submenu">
+                                {% for child in node.children %}
+                                    <li class="header-categories-nav__submenu-item">
+                                        <a href="{{ child.item.get_absolute_url }}" class="header-categories-nav__submenu-link">
+                                            {{ child.item.name }}
+                                        </a>
+
+                                        {% if child.children %}
+                                            <ul class="header-categories-nav__subsubmenu">
+                                                {% for grandchild in child.children %}
+                                                    <li class="header-categories-nav__subsubmenu-item">
+                                                        <a href="{{ grandchild.item.get_absolute_url }}" class="header-categories-nav__submenu-link">
+                                                            {{ grandchild.item.name }}
+                                                        </a>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </nav>
+{% endif %}

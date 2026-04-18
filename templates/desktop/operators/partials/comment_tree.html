@@ -1,0 +1,32 @@
+{% load comment_tags %}
+
+<div class="comments-section">
+    <h3 class="comments-section__title">Kommentare ({{ comments|length }})</h3>
+    
+    {% if comments %}
+        <div class="comments-list">
+            {% for comment in comments %}
+                {% include "operators/partials/comment_node.html" with comment=comment %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="comments-empty">Noch keine Kommentare. Sei der/die Erste und schreib einen Kommentar!</p>
+    {% endif %}
+    
+    {% if user.is_authenticated %}
+        {% if user.profile.is_email_verified %}
+        <div class="comment-form-container">
+            <h4 class="comment-form__title">Kommentar schreiben</h4>
+            {% include "operators/partials/comment_form.html" with bookmaker=bookmaker %}
+        </div>
+        {% else %}
+        <p class="comment-login-prompt">
+            Um zu kommentieren, musst du zuerst deine E-Mail bestätigen.
+        </p>
+        {% endif %}
+    {% else %}
+        <p class="comment-login-prompt">
+            Bitte <a href="{% url 'users:login' %}">anmelden</a>, um einen Kommentar zu schreiben.
+        </p>
+    {% endif %}
+</div>

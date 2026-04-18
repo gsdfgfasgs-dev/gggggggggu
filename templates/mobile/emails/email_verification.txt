@@ -1,0 +1,25 @@
+E-Mail-Adresse bestätigen
+=========================
+
+Hi {{ user.username|default:user.email }},
+
+willkommen bei RoyalLink! Bitte bestätige deine E-Mail, um loszulegen.
+
+Öffne diesen Link auf deinem Smartphone oder Computer:
+
+{{ verify_url }}
+
+Dieser Bestätigungslink läuft in {{ expires_hours|default:48 }} Stunden ab.
+
+Wenn du kein Konto erstellt hast, kannst du diese E-Mail ignorieren.
+
+---
+
+Nach der Bestätigung kannst du:
+✓ Buchmacher bewerten
+✓ Artikel und Bewertungen kommentieren
+✓ Deine Wett-Statistiken verfolgen
+✓ Personalisierte Empfehlungen erhalten
+
+© {% now "Y" %} RoyalLink. All rights reserved.
+Diese E-Mail wurde an {{ to_email }} gesendet.
